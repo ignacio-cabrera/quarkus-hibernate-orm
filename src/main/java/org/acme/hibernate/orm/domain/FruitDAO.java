@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import org.acme.hibernate.orm.domain.dto.ent.Fruit;
-import org.acme.hibernate.orm.domain.port.FruitStorageService;
+import org.acme.hibernate.orm.port.FruitStorageService;
 
 import java.util.List;
 
@@ -14,10 +14,10 @@ public class FruitDAO implements FruitStorageService {
     @Inject
     EntityManager entityManager;
 
-//    @Override
-//    public List<Fruit> getAll() {
-//        return List.of();
-//    }
+    @Override
+    public List<Fruit> getAll() {
+        return entityManager.createNamedQuery("Fruits.findAll",Fruit.class).getResultList();
+    }
 //
 //    @Override
 //    public Fruit getById(Integer id) {
@@ -25,10 +25,9 @@ public class FruitDAO implements FruitStorageService {
 //    }
 
     @Override
-    public Fruit create(String name) {
-        Fruit newFruit = new Fruit(name);
-        entityManager.persist(newFruit);
-        return newFruit;
+    public Fruit create(Fruit fruit) {
+        entityManager.persist(fruit);
+        return fruit;
     }
 
 //    @Override

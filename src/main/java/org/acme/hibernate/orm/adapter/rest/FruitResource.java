@@ -18,7 +18,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
-import org.acme.hibernate.orm.domain.dto.ent.Fruit;
+import org.acme.hibernate.orm.application.vo.VOFruit;
+import org.acme.hibernate.orm.port.FruitService;
 import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,68 +31,66 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Consumes("application/json")
 public class FruitResource {
 
+    @Inject
+    FruitService fruitService;
+
     private static final Logger LOGGER = Logger.getLogger(FruitResource.class.getName());
 
-    @Inject
-    EntityManager entityManager;
-
     @GET
-    public List<Fruit> get() {
-        return entityManager.createNamedQuery("Fruits.findAll", Fruit.class)
-                .getResultList();
+    public List<VOFruit> get() {
+        return fruitService.getAll();
     }
-
-    @GET
-    @Path("{id}")
-    public Fruit getSingle(Integer id) {
-        Fruit entity = entityManager.find(Fruit.class, id);
-        if (entity == null) {
-            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
-        }
-        return entity;
-    }
-
+//
+//    @GET
+//    @Path("{id}")
+//    public Fruit getSingle(Integer id) {
+//        Fruit entity = entityManager.find(Fruit.class, id);
+//        if (entity == null) {
+//            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
+//        }
+//        return entity;
+//    }
+//
     @POST
     @Transactional
-    public Response create(Fruit fruit) {
+    public Response create(VOFruit fruit) {
         if (fruit.getId() != null) {
             throw new WebApplicationException("Id was invalidly set on request.", 422);
         }
-
-        entityManager.persist(fruit);
-        return Response.ok(fruit).status(201).build();
+        VOFruit saved = fruitService.create(fruit);
+        return Response.ok(saved).status(201).build();
     }
-
-    @PUT
-    @Path("{id}")
-    @Transactional
-    public Fruit update(Integer id, Fruit fruit) {
-        if (fruit.getName() == null) {
-            throw new WebApplicationException("Fruit Name was not set on request.", 422);
-        }
-
-        Fruit entity = entityManager.find(Fruit.class, id);
-
-        if (entity == null) {
-            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
-        }
-
-        entity.setName(fruit.getName());
-
-        return entity;
-    }
-
-    @DELETE
-    @Path("{id}")
-    @Transactional
-    public Response delete(Integer id) {
-        Fruit entity = entityManager.getReference(Fruit.class, id);
-        if (entity == null) {
-            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
-        }
-        entityManager.remove(entity);
-        return Response.status(204).build();
-    }
+//
+//    @PUT
+//    @Path("{id}")
+//    @Transactional
+//    public Fruit update(Integer id, Fruit fruit) {
+//        if (fruit.getName() == null) {
+//            throw new WebApplicationException("Fruit Name was not set on request.", 422);
+//        }
+//
+//        Fruit entity = entityManager.find(Fruit.class, id);
+//
+//        if (entity == null) {
+//            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
+//        }
+//
+//        entity.setName(fruit.getName());
+//
+//        return entity;
+//    }
+//
+//    @DELETE
+//    @Path("{id}")
+//    @Transactional
+//    public Response delete(Integer id) {
+//        Fruit entity = entityManager.getReference(Fruit.class, id);
+//        if (entity == null) {
+//            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
+//        }
+//        entityManager.remove(entity);
+//        return Response.status(204).build();
+//    }
 
     @Provider
     public static class ErrorMapper implements ExceptionMapper<Exception> {
