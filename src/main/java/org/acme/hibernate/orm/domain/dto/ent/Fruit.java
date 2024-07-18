@@ -1,4 +1,4 @@
-package org.acme.hibernate.orm;
+package org.acme.hibernate.orm.domain.dto.ent;
 
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
