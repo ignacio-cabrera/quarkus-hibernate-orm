@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface FruitStorageService {
     List<Fruit> getAll();
-//    Fruit getById(Integer id);
+    Fruit getById(Integer id);
     Fruit create(Fruit fruit);
-//    Fruit update(Integer id, String name);
-//    void delete(Integer id);
+    Fruit update(Fruit fruit);
+    void delete(Fruit fruit);
 }

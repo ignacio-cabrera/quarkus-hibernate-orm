@@ -7,6 +7,7 @@ import org.acme.hibernate.orm.domain.dto.ent.Fruit;
 import org.acme.hibernate.orm.port.FruitStorageService;
 
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class FruitDAO implements FruitStorageService {
@@ -18,11 +19,11 @@ public class FruitDAO implements FruitStorageService {
     public List<Fruit> getAll() {
         return entityManager.createNamedQuery("Fruits.findAll",Fruit.class).getResultList();
     }
-//
-//    @Override
-//    public Fruit getById(Integer id) {
-//        return null;
-//    }
+
+    @Override
+    public Fruit getById(Integer id) {
+        return entityManager.find(Fruit.class, id);
+    }
 
     @Override
     public Fruit create(Fruit fruit) {
@@ -30,10 +31,15 @@ public class FruitDAO implements FruitStorageService {
         return fruit;
     }
 
-//    @Override
-//    public Fruit update(Integer id, String name) {
-//        return null;
-//    }
+    @Override
+    public Fruit update(Fruit fruit) {
+        return entityManager.merge(fruit);
+    }
+
+    @Override
+    public void delete(Fruit fruit) {
+        entityManager.remove(fruit);
+    }
 //
 //    @Override
 //    public void delete(Integer id) {

@@ -40,57 +40,41 @@ public class FruitResource {
     public List<VOFruit> get() {
         return fruitService.getAll();
     }
-//
-//    @GET
-//    @Path("{id}")
-//    public Fruit getSingle(Integer id) {
-//        Fruit entity = entityManager.find(Fruit.class, id);
-//        if (entity == null) {
-//            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
-//        }
-//        return entity;
-//    }
-//
+
+    @GET
+    @Path("{id}")
+    public VOFruit getSingle(String id) {
+        return fruitService.getById(id)
+                .orElseThrow(() -> new WebApplicationException("Fruit with id of " + id + " does not exist.", 404));
+    }
+
     @POST
     @Transactional
     public Response create(VOFruit fruit) {
-        if (fruit.getId() != null) {
+        if (fruit.getId() != null)
             throw new WebApplicationException("Id was invalidly set on request.", 422);
-        }
         VOFruit saved = fruitService.create(fruit);
         return Response.ok(saved).status(201).build();
     }
-//
-//    @PUT
-//    @Path("{id}")
-//    @Transactional
-//    public Fruit update(Integer id, Fruit fruit) {
-//        if (fruit.getName() == null) {
-//            throw new WebApplicationException("Fruit Name was not set on request.", 422);
-//        }
-//
-//        Fruit entity = entityManager.find(Fruit.class, id);
-//
-//        if (entity == null) {
-//            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
-//        }
-//
-//        entity.setName(fruit.getName());
-//
-//        return entity;
-//    }
-//
-//    @DELETE
-//    @Path("{id}")
-//    @Transactional
-//    public Response delete(Integer id) {
-//        Fruit entity = entityManager.getReference(Fruit.class, id);
-//        if (entity == null) {
-//            throw new WebApplicationException("Fruit with id of " + id + " does not exist.", 404);
-//        }
-//        entityManager.remove(entity);
-//        return Response.status(204).build();
-//    }
+
+    @PUT
+    @Path("{id}")
+    @Transactional
+    public VOFruit update(String id, VOFruit fruit) {
+        if (fruit.getName() == null)
+            throw new WebApplicationException("Fruit Name was not set on request.", 422);
+        getSingle(id);
+        return fruitService.update(id, fruit);
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Transactional
+    public Response delete(String id) {
+        getSingle(id);
+        fruitService.delete(id);
+        return Response.status(204).build();
+    }
 
     @Provider
     public static class ErrorMapper implements ExceptionMapper<Exception> {
